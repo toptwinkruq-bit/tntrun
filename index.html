@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ТНТРан 1х1 — Турнир по Minecraft</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0a; --bg-panel: #1a1a24; --purple: #8a2be2; 
+            --purple-light: #b780ff; --red: #e63946; --text-main: #f8f9fa; 
+            --text-muted: #adb5bd; --border: #2b2b3c;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.6; }
+        
+        /* Шапка и меню */
+        header { background: linear-gradient(135deg, var(--bg-dark) 0%, #2a0a3a 50%, #4a0b11 100%); padding: 60px 20px; text-align: center; border-bottom: 3px solid var(--red); position: relative; overflow: hidden; }
+        header::before { content: "💥"; position: absolute; font-size: 15rem; opacity: 0.05; top: -40px; right: -20px; transform: rotate(15deg); }
+        header h1 { font-size: 3rem; text-transform: uppercase; text-shadow: 0 0 10px var(--red), 0 0 20px var(--purple); margin-bottom: 10px; }
+        header p { font-size: 1.2rem; color: var(--purple-light); font-weight: bold; }
+        nav { background: var(--bg-panel); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        nav a { color: var(--text-main); margin: 0 10px; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; transition: color 0.3s; }
+        nav a:hover { color: var(--red); text-shadow: 0 0 8px var(--red); }
+        
+        /* Секции */
+        section { max-width: 1200px; margin: 0 auto; padding: 50px 20px; }
+        h2 { font-size: 2rem; margin-bottom: 30px; border-left: 5px solid var(--purple); padding-left: 15px; text-transform: uppercase; }
+        .info-box { background: var(--bg-panel); padding: 30px; border-radius: 10px; border: 1px solid var(--border); font-size: 1.1rem; box-shadow: 0 0 15px rgba(138, 43, 226, 0.1); }
+        
+        /* Участники */
+        .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .player-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 20px; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .player-card:hover { transform: translateY(-5px); border-color: var(--purple); box-shadow: 0 10px 20px rgba(138, 43, 226, 0.2); }
+        .player-number { font-size: 1.5rem; font-weight: 900; color: var(--text-muted); opacity: 0.3; width: 40px; text-align: center; }
+        .player-avatar { width: 50px; height: 50px; background: #111118; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; border: 2px solid var(--border); transition: border-color 0.3s; }
+        .player-card:hover .player-avatar { border-color: var(--purple-light); }
+        .player-nickname { font-size: 1.2rem; font-weight: bold; }
+        .player-status { font-size: 0.8rem; color: var(--purple-light); text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+
+        /* Структура */
+        .structure-intro { font-size: 1.2rem; text-align: center; margin-bottom: 40px; color: var(--text-muted); }
+        .stage-block { background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 40px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        .stage-header { background: linear-gradient(90deg, rgba(138, 43, 226, 0.2) 0%, rgba(26, 26, 36, 1) 100%); padding: 20px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .stage-header h3 { font-size: 1.5rem; color: var(--purple-light); }
+        .stage-badge { background: var(--red); color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; box-shadow: 0 0 10px rgba(230, 57, 70, 0.5); }
+        .stage-content { padding: 30px; }
+        .step-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .step-item { display: flex; align-items: flex-start; gap: 15px; background: #111118; padding: 15px 20px; border-radius: 8px; border-left: 4px solid var(--purple); }
+        .step-icon { font-size: 1.5rem; }
+        .step-text strong { color: var(--text-main); display: block; margin-bottom: 5px; }
+        .step-text span { color: var(--text-muted); font-size: 0.95rem; }
+        .summary-alert { background: rgba(138, 43, 226, 0.15); border: 1px solid var(--purple); padding: 20px; border-radius: 8px; margin-top: 25px; text-align: center; font-weight: bold; color: var(--purple-light); }
+
+        /* Правила */
+        .rule-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed var(--border); }
+        .rule-item:last-child { border: none; }
+        .highlight-red { color: var(--red); font-weight: 600; }
+
+        /* Сетки (Brackets) */
+        .bracket-container { background: var(--bg-panel); border-radius: 10px; border: 1px solid var(--border); padding: 20px; overflow-x: auto; margin-bottom: 40px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .bracket-title { text-align: center; font-size: 1.5rem; color: var(--red); margin-bottom: 25px; font-weight: bold; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        .bracket-grid { display: flex; gap: 30px; justify-content: center; min-width: 800px; }
+        .group-column { flex: 1; background: #111118; border: 1px solid var(--border); border-radius: 8px; padding: 15px; }
+        .group-name { text-align: center; font-size: 1.2rem; font-weight: bold; color: var(--purple-light); margin-bottom: 20px; background: rgba(138, 43, 226, 0.2); padding: 5px; border-radius: 5px; }
+        .group-matches { display: flex; gap: 20px; justify-content: space-between; }
+        .match-column { display: flex; flex-direction: column; gap: 20px; flex: 1; }
+        .col-title { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); text-align: center; margin-bottom: 10px; font-weight: bold; }
+        
+        .match-card { background: #1f1f2e; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; font-size: 0.85rem; position: relative; }
+        .match-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--red); }
+        .player { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid #2a2a3a; }
+        .player:last-child { border-bottom: none; }
+        .player-name { color: var(--text-main); }
+        .player-score { color: var(--purple-light); font-weight: bold; }
+        .empty-slot { color: var(--text-muted); font-style: italic; opacity: 0.6; }
+
+        .playoff-grid { display: flex; gap: 60px; justify-content: center; align-items: center; min-width: 600px; }
+        .playoff-round { display: flex; flex-direction: column; gap: 40px; }
+        .playoff-match { background: #1f1f2e; border: 1px solid var(--border); border-radius: 6px; width: 200px; font-size: 0.85rem; position: relative; }
+        .playoff-match::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--purple); }
+
+        footer { text-align: center; padding: 30px; background: var(--bg-panel); color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 50px; }
+        @media (max-width: 900px) { nav a { display: inline-block; margin: 5px 10px; } .stage-header { flex-direction: column; gap: 10px; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ТНТРан 1х1</h1>
+        <p>Киберспортивный турнир по Minecraft TNT Run</p>
+    </header>
+
+    <nav>
+        <a href="#about">О турнире</a>
+        <a href="#players">Участники</a>
+        <a href="#structure">Структура</a>
+        <a href="#rules">Правила</a>
+        <a href="#groups">Группы</a>
+        <a href="#playoff">Плей-офф</a>
+    </nav>
+
+    <!-- О ТУРНИРЕ -->
+    <section id="about">
+        <h2>О турнире</h2>
+        <div class="info-box">
+            <p>Добро пожаловать на официальный сайт турнира <strong>«ТНТРан 1х1»</strong>!</p>
+            <p><strong>Правила:</strong> Играем 1x1 (с рандомными игроками). Победитель раунда — тот, кто дольше продержится. Победитель матча — тот, кто одержит нужное количество побед!</p>
+            <ul style="margin-top: 15px; margin-left: 20px; list-style-type: none;">
+                <li style="margin-bottom: 10px;"><strong>Дата:</strong> 31 октября – 1 ноября</li>
+                <li style="margin-bottom: 10px;"><strong>Групповая стадия:</strong> 31 октября</li>
+                <li style="margin-bottom: 10px;"><strong>Плей-офф:</strong> 1 ноября</li>
+                <li style="margin-bottom: 10px;"><strong>Место проведения:</strong> TeslaCraft (Большая арена ТНТРан)</li>
+            </ul>
+            <div style="margin-top: 20px; background: rgba(138, 43, 226, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--purple);">
+                <strong>Призовые турнира:</strong><br>🥇 1 место – 300 ТСА<br>🥈 2 место – 150 ТСА
+            </div>
+        </div>
+    </section>
+
+    <!-- УЧАСТНИКИ -->
+    <section id="players">
+        <h2>Список участников</h2>
+        <div class="players-grid">
+            <div class="player-card"><div class="player-number">1</div><div class="player-avatar">⛏️</div><div><div class="player-nickname">Игрок 1</div><div class="player-status">Участник</div></div></div>
+            <div class="player-card"><div class="player-number">2</div><div class="player-avatar">💣</div><div><div class="player-nickname">Игрок 2</div><div class="player-status">Участник</div></div></div>
+            <div class="player-card"><div class="player-number">3</div><div class="player-avatar">🔥</div><div><div class="player-nickname">Игрок 3</div><div class="player-status">Участник</div></div></div>
+            <div class="player-card"><div class="player-number">4</div><div class="player-avatar">👑</div><div><div class="player-nickname">Игрок 4</div><div class="player-status">Участник</div></div></div>
+            <div class="player-card"><div class="player-number">5</div><div class="player-avatar">⚔️</div><div><div class="player-nickname">Игрок 5</div><div class="player-status">Участник</div></div></div>
+            <div class="player-card"><div class="player-number">6</div><div class="player-avatar">🛡️</div><div><div class="player-nickname">Игрок 6</div><div class="player-status">Участник</div></div></div>
+            <div class="player-card"><div class="player-number">7</div><div class="player-avatar">🧨</div><div><div class="player-nickname">Игрок 7</div><div class="player-status">Участник</div></div></div>
+            <div class="player-card"><div class="player-number">8</div><div class="player-avatar">💎</div><div><div class="player-nickname">Игрок 8</div><div class="player-status">Участник</div></div></div>
+        </div>
+    </section>
+
+    <!-- СТРУКТУРА -->
+    <section id="structure">
+        <h2>Структура турнира</h2>
+        <div class="structure-intro">Турнир «ТНТРан 1х1» состоит из двух этапов: <strong>Групповой стадии</strong> (31 октября) и <strong>Плей-офф</strong> (1 ноября).</div>
+
+        <div class="stage-block">
+            <div class="stage-header"><h3>1. Групповая стадия</h3><span class="stage-badge">Bo5</span></div>
+            <div class="stage-content">
+                <p>Все 8 участников делятся на 2 группы (по 4 человека). В каждой группе мы играем по системе <strong>Double Elimination</strong>. Даже за одно поражение вы не вылетаете сразу!</p>
+                <div class="step-list">
+                    <div class="step-item"><div class="step-icon">⚔️</div><div class="step-text"><strong>Первый раунд (Opening)</strong><span>Игроки в группе делятся на пары и играют друг с другом.</span></div></div>
+                    <div class="step-item"><div class="step-icon">👑</div><div class="step-text"><strong>Верхняя сетка (Winners)</strong><span>Те, кто выиграл, играют между собой. Победитель выходит в Плей-офф с 1-го места.</span></div></div>
+                    <div class="step-item"><div class="step-icon">💀</div><div class="step-text"><strong>Нижняя сетка (Elimination)</strong><span>Проигравшие первый матч играют между собой. Проигравший вылетает (4-е место).</span></div></div>
+                    <div class="step-item"><div class="step-icon">🔥</div><div class="step-text"><strong>Решающий матч (Decider)</strong><span>Победитель нижней сетки играет с проигравшим из верхней. Победитель забирает 2-е место и проходит в Плей-офф. Проигравший вылетает (3-е место).</span></div></div>
+                </div>
+                <div class="summary-alert">Итог: Из каждой группы выходят по 2 лучших игрока. Всего в Плей-офф проходят 4 человека.</div>
+            </div>
+        </div>
+
+        <div class="stage-block" style="border-color: var(--purple);">
+            <div class="stage-header" style="background: linear-gradient(90deg, rgba(230, 57, 70, 0.2) 0%, rgba(26, 26, 36, 1) 100%);">
+                <h3>2. Плей-офф</h3><span class="stage-badge" style="background: var(--purple);">Bo7</span>
+            </div>
+            <div class="stage-content">
+                <p>Это стадия на вылет (<strong>Single Elimination</strong>). Здесь права на ошибку уже нет.</p>
+                <div class="step-list">
+                    <div class="step-item" style="border-left-color: var(--red);"><div class="step-icon">⚔️</div><div class="step-text"><strong>Полуфиналы</strong><span>1-е место Группы А играет против 2-го места Группы В. И наоборот.</span></div></div>
+                    <div class="step-item" style="border-left-color: var(--red);"><div class="step-icon">🏆</div><div class="step-text"><strong>Гранд-финал</strong><span>Победители полуфиналов встречаются в финальном матче за звание чемпиона.</span></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ПРАВИЛА -->
+    <section id="rules">
+        <h2>Правила турнира</h2>
+        <div class="info-box">
+            <div style="color: var(--red); font-weight: bold; text-transform: uppercase; margin-bottom: 20px; font-size: 1.2rem;">ОБЯЗАТЕЛЬНО к прочтению.</div>
+            <div class="rule-item"><strong>[1]</strong> Запрещено нарушение правил TeslaCraft</div>
+            <div class="rule-item"><strong>[2]</strong> Запрещено создавать помеху, если вы являетесь участником турнира. Так же запрещено просить других людей создавать помеху тому или иному участнику турнира</div>
+            <div class="rule-item"><strong>[3]</strong> На турнире могут присутствовать игроки, которые будут мешать проведению турнира. Поэтому участник турнира может заявить о том, что не желает играть с каким-либо из игроков. Аннулировать проигрыш из-за помехи можно только в крайнем случае. Если начинается открытый таргет — перенесите дуэль на 10-15 минут. Если не помогло — к организаторам.</div>
+            <div class="rule-item"><strong>[4]</strong> Если пинг вашего соперника во время игры стабильно превышал 250, то раунд переигрывается!</div>
+            <div class="rule-item"><strong>[5]</strong> Для более честной игры, в случае неравного количества дд у вас и вашего соперника, старший по званию обязан потратить необходимое кол-во бустов до равного значения между вами.</div>
+            <div class="rule-item highlight-red">Крайне желательно играть с записью экрана/радей модом, в случае его отсутствия организаторы при каких либо недопониманиях будут не на вашей стороне</div>
+            <div class="rule-item highlight-red">При подозрительных залагиваниях во время игры у соперника (особенно при падениях перед явным поражением) раунд переигрывается!</div>
+            <div class="rule-item highlight-red">Если вы проиграли из-за вылета/пинга/лагов, то со всеми доказательствами обращайтесь к организаторам турнира</div>
+            <div class="rule-item"><strong>Степень нарушения и наказание определяют организаторы турнира</strong></div>
+        </div>
+    </section>
+
+    <!-- ГРУППЫ -->
+    <section id="groups">
+        <h2>Групповая стадия</h2>
+        <div class="bracket-container">
+            <div class="bracket-title">Групповой этап (Bo5)</div>
+            <div class="bracket-grid">
+                <!-- Группа А -->
+                <div class="group-column">
+                    <div class="group-name">Группа A</div>
+                    <div class="group-matches">
+                        <div class="match-column">
+                            <div class="col-title">Opening Round</div>
+                            <div class="match-card"><div class="player"><span class="player-name">Участник 1</span><span class="player-score">0</span></div><div class="player"><span class="player-name">Участник 2</span><span class="player-score">0</span></div></div>
+                            <div class="match-card"><div class="player"><span class="player-name">Участник 3</span><span class="player-score">0</span></div><div class="player"><span class="player-name">Участник 4</span><span class="player-score">0</span></div></div>
+                        </div>
+                        <div class="match-column">
+                            <div class="col-title">Winners' match</div>
+                            <div class="match-card"><div class="player"><span class="player-name empty-slot">Победитель 1</span><span class="player-score">0</span></div><div class="player"><span class="player-name empty-slot">Победитель 2</span><span class="player-score">0</span></div></div>
+                        </div>
+                    </div>
+                    <div class="group-matches" style="margin-top: 20px;">
+                        <div class="match-column">
+                            <div class="col-title">Elimination match</div>
+                            <div class="match-card"><div class="player"><span class="player-name empty-slot">Проигравший 1</span><span class="player-score">0</span></div><div class="player"><span class="player-name empty-slot">Проигравший 2</span><span class="player-score">0</span></div></div>
+                        </div>
+                        <div class="match-column">
+                            <div class="col-title">Decider match</div>
+                            <div class="match-card"><div class="player"><span class="player-name empty-slot">Победитель Elim</span><span class="player-score">0</span></div><div class="player"><span class="player-name empty-slot">Проигравший Win</span><span class="player-score">0</span></div></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Группа B -->
+                <div class="group-column">
+                    <div class="group-name">Группа B</div>
+                    <div class="group-matches">
+                        <div class="match-column">
+                            <div class="col-title">Opening Round</div>
+                            <div class="match-card"><div class="player"><span class="player-name">Участник 5</span><span class="player-score">0</span></div><div class="player"><span class="player-name">Участник 6</span><span class="player-score">0</span></div></div>
+                            <div class="match-card"><div class="player"><span class="player-name">Участник 7</span><span class="player-score">0</span></div><div class="player"><span class="player-name">Участник 8</span><span class="player-score">0</span></div></div>
+                        </div>
+                        <div class="match-column">
+                            <div class="col-title">Winners' match</div>
+                            <div class="match-card"><div class="player"><span class="player-name empty-slot">Победитель 1</span><span class="player-score">0</span></div><div class="player"><span class="player-name empty-slot">Победитель 2</span><span class="player-score">0</span></div></div>
+                        </div>
+                    </div>
+                    <div class="group-matches" style="margin-top: 20px;">
+                        <div class="match-column">
+                            <div class="col-title">Elimination match</div>
+                            <div class="match-card"><div class="player"><span class="player-name empty-slot">Проигравший 1</span><span class="player-score">0</span></div><div class="player"><span class="player-name empty-slot">Проигравший 2</span><span class="player-score">0</span></div></div>
+                        </div>
+                        <div class="match-column">
+                            <div class="col-title">Decider match</div>
+                            <div class="match-card"><div class="player"><span class="player-name empty-slot">Победитель Elim</span><span class="player-score">0</span></div><div class="player"><span class="player-name empty-slot">Проигравший Win</span><span class="player-score">0</span></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ПЛЕЙ-ОФФ -->
+    <section id="playoff">
+        <h2>Плей-офф</h2>
+        <div class="bracket-container">
+            <div class="bracket-title">Финальная стадия (Bo7)</div>
+            <div class="playoff-grid">
+                <div class="playoff-round">
+                    <div class="col-title">Полуфиналы (Bo7)</div>
+                    <div class="playoff-match">
+                        <div class="player"><span class="player-name empty-slot">1-е место Группы A</span><span class="player-score">0</span></div>
+                        <div class="player"><span class="player-name empty-slot">2-е место Группы B</span><span class="player-score">0</span></div>
+                    </div>
+                    <div class="playoff-match">
+                        <div class="player"><span class="player-name empty-slot">1-е место Группы B</span><span class="player-score">0</span></div>
+                        <div class="player"><span class="player-name empty-slot">2-е место Группы A</span><span class="player-score">0</span></div>
+                    </div>
+                </div>
+                <div class="playoff-round">
+                    <div class="col-title">Гранд-финал (Bo7)</div>
+                    <div class="playoff-match" style="border-color: var(--red);">
+                        <div class="player"><span class="player-name empty-slot">Победитель SF1</span><span class="player-score">0</span></div>
+                        <div class="player"><span class="player-name empty-slot">Победитель SF2</span><span class="player-score">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Турнир «ТНТРан». Сделано с любовью к Minecraft.</p>
+    </footer>
+
+</body>
+</html>
