@@ -74,6 +74,12 @@
         .player-name { color: var(--text-main); }
         .player-score { color: var(--purple-light); font-weight: bold; }
         .empty-slot { color: var(--text-muted); font-style: italic; opacity: 0.6; }
+        
+        /* Стили для победителей и проигравших */
+        .player.winner { background: rgba(138, 43, 226, 0.15); font-weight: bold; }
+        .player.winner .player-name { color: var(--purple-light); }
+        .player.loser .player-name,
+        .player.loser .player-score { color: var(--text-muted); opacity: 0.5; text-decoration: line-through; }
 
         .playoff-grid { display: flex; gap: 60px; justify-content: center; align-items: center; min-width: 600px; }
         .playoff-round { display: flex; flex-direction: column; gap: 40px; }
@@ -232,15 +238,17 @@
                                 <div class="player"><span class="player-name">KageMa</span><span class="player-score">0</span></div>
                             </div>
                             <div class="match-card">
-                                <div class="player"><span class="player-name">alena_zhaba228</span><span class="player-score">0</span></div>
-                                <div class="player"><span class="player-name">Flash1337</span><span class="player-score">0</span></div>
+                                <!-- Матч с результатом 3:0 -->
+                                <div class="player winner"><span class="player-name">Flash1337</span><span class="player-score">3</span></div>
+                                <div class="player loser"><span class="player-name">alena_zhaba228</span><span class="player-score">0</span></div>
                             </div>
                         </div>
                         <div class="match-column">
                             <div class="col-title">Winners' match</div>
                             <div class="match-card">
+                                <!-- Победитель пары 2 уже известен (Flash1337) -->
+                                <div class="player"><span class="player-name">Flash1337</span><span class="player-score">0</span></div>
                                 <div class="player"><span class="player-name empty-slot">Победитель 1</span><span class="player-score">0</span></div>
-                                <div class="player"><span class="player-name empty-slot">Победитель 2</span><span class="player-score">0</span></div>
                             </div>
                         </div>
                     </div>
@@ -248,8 +256,9 @@
                         <div class="match-column">
                             <div class="col-title">Elimination match</div>
                             <div class="match-card">
+                                <!-- Проигравший пары 2 уже известен (alena_zhaba228) -->
+                                <div class="player"><span class="player-name">alena_zhaba228</span><span class="player-score">0</span></div>
                                 <div class="player"><span class="player-name empty-slot">Проигравший 1</span><span class="player-score">0</span></div>
-                                <div class="player"><span class="player-name empty-slot">Проигравший 2</span><span class="player-score">0</span></div>
                             </div>
                         </div>
                         <div class="match-column">
@@ -262,7 +271,7 @@
                     </div>
                 </div>
                 
-                <!-- Группа B -->
+                <!-- Группа B (Без изменений) -->
                 <div class="group-column">
                     <div class="group-name">Группа B</div>
                     <div class="group-matches">
